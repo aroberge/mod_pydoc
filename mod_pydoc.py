@@ -475,7 +475,7 @@ class HTMLDoc(Doc):
     def heading(self, title, extras=''):
         """Format a page heading."""
         return '''
-<table class="heading" details="heading">
+<table class="heading">
 <tr><td>{}</td><td class="align_right normal">{}</td></tr></table>
     '''.format(title, extras or '&nbsp;')
 
@@ -487,7 +487,7 @@ class HTMLDoc(Doc):
         if marginalia is None:
             marginalia = '<code>' + '&nbsp;' * width + '</code>'
         result = '''<br>
-<table class={} details="section">
+<table class="{}">
 <tr>
 <td colspan="3">&nbsp;<br>
 {}</td></tr>
@@ -526,7 +526,7 @@ class HTMLDoc(Doc):
                 if i < len(list):
                     result = result + format(list[i]) + '<br>\n'
             result = result + '</td>'
-        return '<table style="width:100%%" details="list"><tr>%s</tr></table>' % result
+        return '<table style="width:100%%"><tr>%s</tr></table>' % result
 
     def grey(self, text): return '<span class="grey">%s</span>' % text
 
