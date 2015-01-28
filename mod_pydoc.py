@@ -440,7 +440,6 @@ class HTMLRepr(Repr):
             # needed to make any special characters, so show a raw string.
             return 'r' + testrepr[0] + self.escape(test) + testrepr[0]
         return re.sub(r'((\\[\\abfnrtv\'"]|\\[0-9]..|\\x..|\\u....)+)',
-                    # r'<font color="#c040c0">\1</font>',
                       r'<span class="repr_string">\1</span>',
                       self.escape(testrepr))
 
@@ -473,16 +472,13 @@ class HTMLDoc(Doc):
 %s
 </body></html>''' % (title, contents)
 
-    def heading(self, title, fgcol, bgcol, extras=''):
+    def heading(self, title, css_class=None, extras=''):
         """Format a page heading."""
         return '''
-<table width="100%%" cellspacing=0 cellpadding=2 border=0 summary="heading">
-<tr bgcolor="%s">
-<td valign=bottom>&nbsp;<br>
-<font color="%s" face="helvetica, arial">&nbsp;<br>%s</font></td
-><td align=right valign=bottom
-><font color="%s" face="helvetica, arial">%s</font></td></tr></table>
-    ''' % (bgcol, fgcol, title, fgcol, extras or '&nbsp;')
+<table class="heading {}" details="heading">
+<tr><td>{}</td><td class="align_right normal">{}</td></tr></table>
+    '''.format(css_class, title, extras or '&nbsp;')
+
 
     def section(self, title, fgcol, bgcol, contents, width=6,
                 prelude='', marginalia=None, gap='&nbsp;'):
@@ -637,10 +633,10 @@ class HTMLDoc(Doc):
         links = []
         for i in range(len(parts)-1):
             links.append(
-                '<a href="%s.html"><font color="#ffffff">%s</font></a>' %
-                ('.'.join(parts[:i+1]), parts[i]))
+                '<a href="{}.html" class="docmodule_link">{}</a>'.format(
+                     '.'.join(parts[:i+1]), parts[i]))
         linkedname = '.'.join(links + parts[-1:])
-        head = '<big><big><strong>%s</strong></big></big>' % linkedname
+        head = '<span class="docmodule_head">{}</span>'.format(linkedname)
         try:
             path = inspect.getabsfile(object)
             url = path
@@ -665,9 +661,8 @@ class HTMLDoc(Doc):
             docloc = '<br><a href="%(docloc)s">Module Reference</a>' % locals()
         else:
             docloc = ''
-        result = self.heading(
-            head, '#ffffff', '#7799ee',
-            '<a href=".">index</a><br>' + filelink + docloc)
+        result = self.heading(head, css_class='docmodule',
+            extras='<a href=".">index</a><br>' + filelink + docloc)
 
         modules = inspect.getmembers(object, inspect.ismodule)
 
@@ -702,7 +697,7 @@ class HTMLDoc(Doc):
                 data.append((key, value))
 
         doc = self.markup(getdoc(object), self.preformat, fdict, cdict)
-        doc = doc and '<tt>%s</tt>' % doc
+        doc = doc and '<code>{}</code>'.format(doc)
         result = result + '<p>%s</p>\n' % doc
 
         if hasattr(object, '__path__'):
@@ -2250,7 +2245,7 @@ def _url_handler(url, content_type="text/html"):
             """Format an HTML page."""
             css_path = "pydoc_data/pydoc_orig.css"
             return '''<!doctype html>
-<html><head><title>Pydoc: {}</title><meta charset="utf-8">
+<html><head><title>Mod_Pydoc: {}</title><meta charset="utf-8">
 <link href="{}" rel="stylesheet">
 </head><body>{}
 <div class="main">{}</div>
@@ -2295,9 +2290,8 @@ def _url_handler(url, content_type="text/html"):
         def bltinlink(name):
             return '<a href="%s.html">%s</a>' % (name, name)
 
-        heading = html.heading(
-            '<big><big><strong>Index of Modules</strong></big></big>',
-            '#ffffff', '#7799ee')
+        heading = html.heading('<span>Index of Modules</span>',
+                                css_class="html_index_h")
         names = [name for name in sys.builtin_module_names
                  if name != '__main__']
         contents = html.multicolumn(names, bltinlink)
@@ -2333,9 +2327,8 @@ def _url_handler(url, content_type="text/html"):
             return '<a href="%s.html">%s</a>' % (name, name)
 
         results = []
-        heading = html.heading(
-            '<big><big><strong>Search Results</strong></big></big>',
-            '#ffffff', '#7799ee')
+        heading = html.heading('Search Results', css_class="html_search_h")
+
         for name, desc in search_result:
             results.append(bltinlink(name) + desc)
         contents = heading + html.bigsection(
@@ -2348,9 +2341,8 @@ def _url_handler(url, content_type="text/html"):
         with tokenize.open(path) as fp:
             lines = html.escape(fp.read())
         body = '<pre>%s</pre>' % lines
-        heading = html.heading(
-            '<big><big><strong>File Listing</strong></big></big>',
-            '#ffffff', '#7799ee')
+        heading = html.heading('File Listing', css_class="html_getfile_h")
+
         contents = heading + html.bigsection(
             'File: %s' % path, '#ffffff', '#ee77aa', body)
         return 'getfile %s' % path, contents
@@ -2361,9 +2353,7 @@ def _url_handler(url, content_type="text/html"):
         def bltinlink(name):
             return '<a href="topic?key=%s">%s</a>' % (name, name)
 
-        heading = html.heading(
-            '<big><big><strong>INDEX</strong></big></big>',
-            '#ffffff', '#7799ee')
+        heading = html.heading('Index of Topics', css_class="html_topics_h")
         names = sorted(Helper.topics.keys())
 
         contents = html.multicolumn(names, bltinlink)
@@ -2373,9 +2363,7 @@ def _url_handler(url, content_type="text/html"):
 
     def html_keywords():
         """Index of keywords."""
-        heading = html.heading(
-            '<big><big><strong>INDEX</strong></big></big>',
-            '#ffffff', '#7799ee')
+        heading = html.heading('Index of Keywords', css_class="html_keywords_h")
         names = sorted(Helper.keywords.keys())
 
         def bltinlink(name):
@@ -2392,12 +2380,10 @@ def _url_handler(url, content_type="text/html"):
         htmlhelp = Helper(buf, buf)
         contents, xrefs = htmlhelp._gettopic(topic)
         if topic in htmlhelp.keywords:
-            title = 'KEYWORD'
+            title = 'Keyword'
         else:
-            title = 'TOPIC'
-        heading = html.heading(
-            '<big><big><strong>%s</strong></big></big>' % title,
-            '#ffffff', '#7799ee')
+            title = 'Topic'
+        heading = html.heading('{}'.format(title), css_class="html_topicpage_h")
         contents = '<pre>%s</pre>' % html.markup(contents)
         contents = html.bigsection(topic, '#ffffff', '#ee77aa', contents)
         if xrefs:
@@ -2421,9 +2407,7 @@ def _url_handler(url, content_type="text/html"):
         return title, content
 
     def html_error(url, exc):
-        heading = html.heading(
-            '<big><big><strong>Error</strong></big></big>',
-            '#ffffff', '#7799ee')
+        heading = html.heading('Error', css_class="html_error_h")
         contents = '<br>'.join(html.escape(line) for line in
                                format_exception_only(type(exc), exc))
         contents = heading + html.bigsection(url, '#ffffff', '#bb0000',

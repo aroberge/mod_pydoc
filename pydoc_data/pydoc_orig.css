@@ -2,15 +2,81 @@
 
 body {background-color:#f0f0f8}
 
+table {
+    width: 100%;
+}
+
+
+td {vertical-align: bottom;}
+
+
 div.main {
     clear:both;
     padding-top:.5em;
+    font-family: Arial, Helvetica, sans-serif;
 }
-/* Naming convention: whenever possible, the class names reflect the name
-   of the methods where the hard-coded values were used. */
 
-.repr_string {color:#c040c0}
+.align_right {
+    text-align: right;
+}
+
+.normal {font-weight: normal;}
+
+.repr_string {color:#c040c0}  /* see HTMLRepr.repr_string */
 
 
+.heading {  /* see HTMLDoc.heading */
+    color: white;
+    height: 3em;
+    font-weight: bold;
+}
 
+.docmodule{ /* see HTMLDoc.docmodule */
+    height: 4em;
+    background-color: #7799ee;
+}
+
+.docmodule_link {  /* see HTMLDoc.docmodule */
+    color: white;
+    text-decoration: underline;
+}
+.docmodule_head {  /* see HTMLDoc.docmodule */
+    font-size: 1.5em;
+}
+
+.html_index_h { /* _HTMLDoc.html_index heading*/
+    background-color: #7799ee;
+    font-size: 1.5em;
+}
+
+.html_search_h { /* _HTMLDoc.html_search heading*/
+    background-color: #7799ee;
+    font-size: 1.5em;
+}
+
+.html_getfile_h { /* _HTMLDoc.html_get_file heading*/
+    background-color: #7799ee;
+    font-size: 1.5em;
+}
+
+.html_topics_h { /* _HTMLDoc.html_topics heading*/
+    background-color: #7799ee;
+    font-size: 1.5em;
+}
+
+.html_keywords_h { /* _HTMLDoc.html_keywords heading*/
+    background-color: #7799ee;
+    font-size: 1.5em;
+}
+
+.html_topicpage_h { /* _HTMLDoc.html_topicpage heading*/
+    background-color: #7799ee;
+    font-size: 1.5em;
+    text-transform: uppercase;
+}
+
+.html_error_h { /* _HTMLDoc.html_error heading*/
+    background-color: #7799ee;
+    font-size: 1.5em;
+}
 
