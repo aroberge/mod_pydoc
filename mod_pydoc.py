@@ -623,7 +623,7 @@ class HTMLDoc(Doc):
             elif type(entry) is type([]):
                 result = result + '<dd>\n%s</dd>\n' % self.formattree(
                     entry, modname, c)
-        return '<dl>\n%s</dl>\n' % result
+        return '<dl><dt>&nbsp;</dt>\n%s<dd>&nbsp;</dd></dl>\n' % result
 
     def docmodule(self, object, name=None, mod=None, *ignored):
         """Produce HTML documentation for a module object."""
@@ -814,12 +814,12 @@ class HTMLDoc(Doc):
                     else:
                         doc = None
                     if doc is None:
-                        push('<dl><dt>%s</dl>\n' % base)
+                        push('<dl><dt>%s</dt><dd>&nbsp;</dd></dl>\n' % base)
                     else:
                         doc = self.markup(getdoc(value), self.preformat,
                                           funcs, classes, mdict)
-                        doc = '<dd><code>%s</code>' % doc
-                        push('<dl><dt>%s%s</dl>\n' % (base, doc))
+                        doc = '<dd><code>%s</code></dd>' % doc
+                        push('<dl><dt>%s%s</dt></dl>\n' % (base, doc))
                     push('\n')
             return attrs
 
@@ -880,10 +880,10 @@ class HTMLDoc(Doc):
         contents = ''.join(contents)
 
         if name == realname:
-            title = '<a name="%s">class <strong>%s</strong></a>' % (
+            title = '<a id="%s">class <strong>%s</strong></a>' % (
                 name, realname)
         else:
-            title = '<strong>%s</strong> = <a name="%s">class %s</a>' % (
+            title = '<strong>%s</strong> = <a id="%s">class %s</a>' % (
                 name, name, realname)
         if bases:
             parents = []
@@ -920,7 +920,7 @@ class HTMLDoc(Doc):
                     note = ' unbound %s method' % self.classlink(imclass, mod)
 
         if name == realname:
-            title = '<a name="%s"><strong>%s</strong></a>' % (anchor, realname)
+            title = '<a id="%s"><strong>%s</strong></a>' % (anchor, realname)
         else:
             if (cl and realname in cl.__dict__ and
                 cl.__dict__[realname] is object):
@@ -929,7 +929,7 @@ class HTMLDoc(Doc):
                 skipdocs = 1
             else:
                 reallink = realname
-            title = '<a name="%s"><strong>%s</strong></a> = %s' % (
+            title = '<a id="%s"><strong>%s</strong></a> = %s' % (
                 anchor, name, reallink)
         argspec = None
         if inspect.isroutine(object):
@@ -951,12 +951,12 @@ class HTMLDoc(Doc):
         decl = title + argspec + (note and self.grey(note))
 
         if skipdocs:
-            return '<dl><dt>%s</dt></dl>\n' % decl
+            return '<dl><dt>%s</dt><dd>&nbsp;</dd></dl>\n' % decl
         else:
             doc = self.markup(
                 getdoc(object), self.preformat, funcs, classes, methods)
-            doc = doc and '<dd><code>%s</code>' % doc
-            return '<dl><dt>%s</dt>%s</dl></dd>\n' % (decl, doc)
+            doc = doc and '<dd><code>%s</code></dd>' % doc
+            return '<dl><dt>%s</dt><dd>&nbsp;</dd>%s</dl>\n' % (decl, doc)
 
     def _docdescriptor(self, name, value, mod):
         results = []
@@ -967,7 +967,7 @@ class HTMLDoc(Doc):
         if value.__doc__ is not None:
             doc = self.markup(getdoc(value), self.preformat)
             push('<dd><code>%s</code></dd>\n' % doc)
-        push('</dl>\n')
+        push('<dd>&nbsp;</dd></dl>\n')
 
         return ''.join(results)
 
