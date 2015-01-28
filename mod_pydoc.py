@@ -612,14 +612,14 @@ class HTMLDoc(Doc):
         for entry in tree:
             if type(entry) is type(()):
                 c, bases = entry
-                result = result + '<dt><font face="helvetica, arial">'
+                result = result + '<dt>'
                 result = result + self.classlink(c, modname)
                 if bases and bases != (parent,):
                     parents = []
                     for base in bases:
                         parents.append(self.classlink(base, modname))
                     result = result + '(' + ', '.join(parents) + ')'
-                result = result + '\n</font></dt>'
+                result = result + '\n</dt>'
             elif type(entry) is type([]):
                 result = result + '<dd>\n%s</dd>\n' % self.formattree(
                     entry, modname, c)
@@ -818,7 +818,7 @@ class HTMLDoc(Doc):
                     else:
                         doc = self.markup(getdoc(value), self.preformat,
                                           funcs, classes, mdict)
-                        doc = '<dd><tt>%s</tt>' % doc
+                        doc = '<dd><code>%s</code>' % doc
                         push('<dl><dt>%s%s</dl>\n' % (base, doc))
                     push('\n')
             return attrs
@@ -891,7 +891,7 @@ class HTMLDoc(Doc):
                 parents.append(self.classlink(base, object.__module__))
             title = title + '(%s)' % ', '.join(parents)
         doc = self.markup(getdoc(object), self.preformat, funcs, classes, mdict)
-        doc = doc and '<tt>%s<br>&nbsp;</tt>' % doc
+        doc = doc and '<code>%s<br>&nbsp;</code>' % doc
 
         return self.html_section(title, contents, 3, doc, css_class="docclass")
 
@@ -948,16 +948,15 @@ class HTMLDoc(Doc):
         if not argspec:
             argspec = '(...)'
 
-        decl = title + argspec + (note and self.grey(
-               '<font face="helvetica, arial">%s</font>' % note))
+        decl = title + argspec + (note and self.grey(note))
 
         if skipdocs:
             return '<dl><dt>%s</dt></dl>\n' % decl
         else:
             doc = self.markup(
                 getdoc(object), self.preformat, funcs, classes, methods)
-            doc = doc and '<dd><tt>%s</tt></dd>' % doc
-            return '<dl><dt>%s</dt>%s</dl>\n' % (decl, doc)
+            doc = doc and '<dd><code>%s</code>' % doc
+            return '<dl><dt>%s</dt>%s</dl></dd>\n' % (decl, doc)
 
     def _docdescriptor(self, name, value, mod):
         results = []
@@ -967,7 +966,7 @@ class HTMLDoc(Doc):
             push('<dl><dt><strong>%s</strong></dt>\n' % name)
         if value.__doc__ is not None:
             doc = self.markup(getdoc(value), self.preformat)
-            push('<dd><tt>%s</tt></dd>\n' % doc)
+            push('<dd><code>%s</code></dd>\n' % doc)
         push('</dl>\n')
 
         return ''.join(results)
