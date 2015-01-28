@@ -472,12 +472,12 @@ class HTMLDoc(Doc):
 %s
 </body></html>''' % (title, contents)
 
-    def heading(self, title, css_class=None, extras=''):
+    def heading(self, title, extras=''):
         """Format a page heading."""
         return '''
-<table class="heading {}" details="heading">
+<table class="heading" details="heading">
 <tr><td>{}</td><td class="align_right normal">{}</td></tr></table>
-    '''.format(css_class, title, extras or '&nbsp;')
+    '''.format(title, extras or '&nbsp;')
 
 
     def html_section(self, title, fgcol, bgcol, contents, width=6,
@@ -658,8 +658,7 @@ class HTMLDoc(Doc):
             links.append(
                 '<a href="{}.html" class="docmodule_link">{}</a>'.format(
                      '.'.join(parts[:i+1]), parts[i]))
-        linkedname = '.'.join(links + parts[-1:])
-        head = '<span class="docmodule_head">{}</span>'.format(linkedname)
+        head = '.'.join(links + parts[-1:])
         try:
             path = inspect.getabsfile(object)
             url = path
@@ -684,8 +683,8 @@ class HTMLDoc(Doc):
             docloc = '<br><a href="%(docloc)s">Module Reference</a>' % locals()
         else:
             docloc = ''
-        result = self.heading(head, css_class='docmodule',
-            extras='<a href=".">index</a><br>' + filelink + docloc)
+        extras = '<a href=".">index</a><br>' + filelink + docloc
+        result = self.heading(head, extras)
 
         modules = inspect.getmembers(object, inspect.ismodule)
 
@@ -2313,8 +2312,7 @@ def _url_handler(url, content_type="text/html"):
         def bltinlink(name):
             return '<a href="%s.html">%s</a>' % (name, name)
 
-        heading = html.heading('<span>Index of Modules</span>',
-                                css_class="html_index_h")
+        heading = html.heading('<span>Index of Modules</span>')
         names = [name for name in sys.builtin_module_names
                  if name != '__main__']
         contents = html.multicolumn(names, bltinlink)
@@ -2350,7 +2348,7 @@ def _url_handler(url, content_type="text/html"):
             return '<a href="%s.html">%s</a>' % (name, name)
 
         results = []
-        heading = html.heading('Search Results', css_class="html_search_h")
+        heading = html.heading('Search Results')
 
         for name, desc in search_result:
             results.append(bltinlink(name) + desc)
@@ -2364,7 +2362,7 @@ def _url_handler(url, content_type="text/html"):
         with tokenize.open(path) as fp:
             lines = html.escape(fp.read())
         body = '<pre>%s</pre>' % lines
-        heading = html.heading('File Listing', css_class="html_getfile_h")
+        heading = html.heading('File Listing')
 
         contents = heading + html.bigsection(
             'File: %s' % path, '#ffffff', '#ee77aa', body)
@@ -2376,7 +2374,7 @@ def _url_handler(url, content_type="text/html"):
         def bltinlink(name):
             return '<a href="topic?key=%s">%s</a>' % (name, name)
 
-        heading = html.heading('Index of Topics', css_class="html_topics_h")
+        heading = html.heading('Index of Topics')
         names = sorted(Helper.topics.keys())
 
         contents = html.multicolumn(names, bltinlink)
@@ -2386,7 +2384,7 @@ def _url_handler(url, content_type="text/html"):
 
     def html_keywords():
         """Index of keywords."""
-        heading = html.heading('Index of Keywords', css_class="html_keywords_h")
+        heading = html.heading('Index of Keywords')
         names = sorted(Helper.keywords.keys())
 
         def bltinlink(name):
@@ -2406,7 +2404,7 @@ def _url_handler(url, content_type="text/html"):
             title = 'Keyword'
         else:
             title = 'Topic'
-        heading = html.heading('{}'.format(title), css_class="html_topicpage_h")
+        heading = html.heading(title)
         contents = '<pre>%s</pre>' % html.markup(contents)
         contents = html.bigsection(topic, '#ffffff', '#ee77aa', contents)
         if xrefs:
@@ -2430,7 +2428,7 @@ def _url_handler(url, content_type="text/html"):
         return title, content
 
     def html_error(url, exc):
-        heading = html.heading('Error', css_class="html_error_h")
+        heading = html.heading('Error')
         contents = '<br>'.join(html.escape(line) for line in
                                format_exception_only(type(exc), exc))
         contents = heading + html.bigsection(url, '#ffffff', '#bb0000',
