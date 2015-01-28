@@ -480,7 +480,7 @@ class HTMLDoc(Doc):
     '''.format(css_class, title, extras or '&nbsp;')
 
 
-    def section(self, title, fgcol, bgcol, contents, width=6,
+    def html_section(self, title, fgcol, bgcol, contents, width=6,
                 prelude='', marginalia=None, gap='&nbsp;'):
         """Format a section with a heading."""
         if marginalia is None:
@@ -502,10 +502,33 @@ class HTMLDoc(Doc):
 
         return result + '\n<td width="100%%">%s</td></tr></table>' % contents
 
+
+#     def section(self, title, fgcol, bgcol, contents, width=6,
+#                 prelude='', marginalia=None, gap='&nbsp;'):
+#         """Format a section with a heading."""
+#         if marginalia is None:
+#             marginalia = '<tt>' + '&nbsp;' * width + '</tt>'
+#         result = '''<p>
+# <table width="100%%" cellspacing=0 cellpadding=2 border=0 summary="section">
+# <tr bgcolor="%s">
+# <td colspan=3 valign=bottom>&nbsp;<br>
+# <font color="%s" face="helvetica, arial">%s</font></td></tr>
+#     ''' % (bgcol, fgcol, title)
+#         if prelude:
+#             result = result + '''
+# <tr bgcolor="%s"><td rowspan=2>%s</td>
+# <td colspan=2>%s</td></tr>
+# <tr><td>%s</td>''' % (bgcol, marginalia, prelude, gap)
+#         else:
+#             result = result + '''
+# <tr><td bgcolor="%s">%s</td><td>%s</td>''' % (bgcol, marginalia, gap)
+
+#         return result + '\n<td width="100%%">%s</td></tr></table>' % contents
+
     def bigsection(self, title, *args):
         """Format a section with a big heading."""
         title = '<big><strong>%s</strong></big>' % title
-        return self.section(title, *args)
+        return self.html_section(title, *args)
 
     def preformat(self, text):
         """Format literal preformatted text."""
@@ -893,7 +916,7 @@ class HTMLDoc(Doc):
         doc = self.markup(getdoc(object), self.preformat, funcs, classes, mdict)
         doc = doc and '<tt>%s<br>&nbsp;</tt>' % doc
 
-        return self.section(title, '#000000', '#ffc8d8', contents, 3, doc)
+        return self.html_section(title, '#000000', '#ffc8d8', contents, 3, doc)
 
     def formatvalue(self, object):
         """Format an argument default value as text."""
@@ -2393,7 +2416,7 @@ def _url_handler(url, content_type="text/html"):
                 return '<a href="topic?key=%s">%s</a>' % (name, name)
 
             xrefs = html.multicolumn(xrefs, bltinlink)
-            xrefs = html.section('Related help topics: ',
+            xrefs = html.html_section('Related help topics: ',
                                  '#ffffff', '#ee77aa', xrefs)
         return ('%s %s' % (title, topic),
                 ''.join((heading, contents, xrefs)))
