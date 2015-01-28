@@ -2230,6 +2230,8 @@ def _start_server(urlhandler, port):
     return thread
 
 
+CSS_PATH = "pydoc_data/pydoc.css"
+
 def _url_handler(url, content_type="text/html"):
     """The pydoc url handler for use with the pydoc server.
 
@@ -2243,13 +2245,12 @@ def _url_handler(url, content_type="text/html"):
 
         def page(self, title, contents):
             """Format an HTML page."""
-            css_path = "pydoc_data/pydoc_orig.css"
             return '''<!doctype html>
 <html><head><title>Mod_Pydoc: {}</title><meta charset="utf-8">
 <link href="{}" rel="stylesheet">
 </head><body>{}
 <div class="main">{}</div>
-</body></html>'''.format(title, css_path, html_navbar(), contents)
+</body></html>'''.format(title, CSS_PATH, html_navbar(), contents)
 
         def filelink(self, url, path):
             return '<a href="getfile?key=%s">%s</a>' % (url, path)
@@ -2454,8 +2455,11 @@ def _url_handler(url, content_type="text/html"):
     if url.startswith('/'):
         url = url[1:]
     if url.endswith('.css'):
-        path_here = os.path.dirname(os.path.realpath(__file__))
-        css_path = os.path.join(path_here, url)
+        if os.path.isfile(url):
+            css_path = url
+        else:
+            path_here = os.path.dirname(os.path.realpath(__file__))
+            css_path = os.path.join(path_here, CSS_PATH)
         with open(css_path) as fp:
             return ''.join(fp.readlines())
     elif content_type == 'text/html':
@@ -2509,6 +2513,8 @@ def cli():
     import getopt
     class BadUsage(Exception): pass
 
+    global CSS_PATH
+
     # Scripts don't get the current directory in their path by default
     # unless they are run with the '-m' switch
     if '' not in sys.path:
@@ -2518,7 +2524,7 @@ def cli():
         sys.path.insert(0, '.')
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'bk:p:w')
+        opts, args = getopt.getopt(sys.argv[1:], 'bkc:p:w')
         writing = False
         start_server = False
         open_browser = False
@@ -2535,6 +2541,13 @@ def cli():
                 port = val
             if opt == '-w':
                 writing = True
+            if opt == '-c':
+                if val == "classic":
+                    CSS_PATH = "pydoc_data/pydoc_orig.css"
+                else:
+                    css_ = os.path.join(os.getcwd(), val)
+                    if os.path.isfile(css_):
+                        CSS_PATH = val
 
         if start_server:
             if port is None:
@@ -2588,6 +2601,11 @@ def cli():
     Write out the HTML documentation for a module to a file in the current
     directory.  If <name> contains a '{sep}', it is treated as a filename; if
     it names a directory, documentation is written for all the contents.
+
+{cmd} -c <name>
+    Alternate choice for styling option.  If name == classic, the color scheme
+    used mimics the original pydoc style.  If a valid css file path is given
+    (relative to the server), it is used instead.
 """.format(cmd=cmd, sep=os.sep))
 
 if __name__ == '__main__':
