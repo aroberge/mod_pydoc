@@ -69,8 +69,6 @@ from collections import deque
 from reprlib import Repr
 from traceback import format_exception_only
 
-# flake8: noqa
-
 # --------------------------------------------------------- common routines
 
 def pathdirs():
@@ -395,14 +393,14 @@ class Doc:
         docloc = os.environ.get("PYTHONDOCS", self.PYTHONDOCS)
 
         basedir = os.path.join(sys.base_exec_prefix, "lib",
-                               "python%d.%d" %  sys.version_info[:2])
+                               "python%d.%d" % sys.version_info[:2])
         if (isinstance(object, type(os)) and
             (object.__name__ in ('errno', 'exceptions', 'gc', 'imp',
                                  'marshal', 'posix', 'signal', 'sys',
                                  '_thread', 'zipimport') or
              (file.startswith(basedir) and
               not file.startswith(os.path.join(basedir, 'site-packages')))) and
-            object.__name__ not in ('xml.etree', 'test.pydoc_mod')):
+              object.__name__ not in ('xml.etree', 'test.pydoc_mod')):
             if docloc.startswith("http://"):
                 docloc = "%s/%s" % (docloc.rstrip("/"), object.__name__)
             else:
@@ -677,7 +675,7 @@ class HTMLDoc(Doc):
         for key, value in inspect.getmembers(object, inspect.isclass):
             # if __all__ exists, believe it.  Otherwise use old heuristic.
             if (all is not None or
-                (inspect.getmodule(value) or object) is object):
+                  (inspect.getmodule(value) or object) is object):
                 if visiblename(key, all, object):
                     classes.append((key, value))
                     cdict[key] = cdict[value] = '#' + key
@@ -687,13 +685,13 @@ class HTMLDoc(Doc):
                 module = sys.modules.get(modname)
                 if modname != name and module and hasattr(module, key):
                     if getattr(module, key) is base:
-                        if not key in cdict:
+                        if key not in cdict:
                             cdict[key] = cdict[base] = modname + '.html#' + key
         funcs, fdict = [], {}
         for key, value in inspect.getmembers(object, inspect.isroutine):
             # if __all__ exists, believe it.  Otherwise use old heuristic.
-            if (all is not None or
-                inspect.isbuiltin(value) or inspect.getmodule(value) is object):
+            if (all is not None or inspect.isbuiltin(value) or
+                   inspect.getmodule(value) is object):
                 if visiblename(key, all, object):
                     funcs.append((key, value))
                     fdict[key] = '#-' + key
@@ -924,7 +922,7 @@ class HTMLDoc(Doc):
                     note = ' method of %s instance' % self.classlink(
                         object.__self__.__class__, mod)
                 else:
-                    note = ' unbound %s method' % self.classlink(imclass,mod)
+                    note = ' unbound %s method' % self.classlink(imclass, mod)
 
         if name == realname:
             title = '<a name="%s"><strong>%s</strong></a>' % (anchor, realname)
@@ -1329,7 +1327,7 @@ location listed above.
                     note = ' method of %s instance' % classname(
                         object.__self__.__class__, mod)
                 else:
-                    note = ' unbound %s method' % classname(imclass,mod)
+                    note = ' unbound %s method' % classname(imclass, mod)
 
         if name == realname:
             title = self.bold(realname)
@@ -1678,15 +1676,15 @@ class Helper:
     # Either add symbols to this dictionary or to the symbols dictionary
     # directly: Whichever is easier. They are merged later.
     _symbols_inverse = {
-        'STRINGS' : ("'", "'''", "r'", "b'", '"""', '"', 'r"', 'b"'),
-        'OPERATORS' : ('+', '-', '*', '**', '/', '//', '%', '<<', '>>', '&',
+        'STRINGS': ("'", "'''", "r'", "b'", '"""', '"', 'r"', 'b"'),
+        'OPERATORS': ('+', '-', '*', '**', '/', '//', '%', '<<', '>>', '&',
                        '|', '^', '~', '<', '>', '<=', '>=', '==', '!=', '<>'),
-        'COMPARISON' : ('<', '>', '<=', '>=', '==', '!=', '<>'),
-        'UNARY' : ('-', '~'),
-        'AUGMENTEDASSIGNMENT' : ('+=', '-=', '*=', '/=', '%=', '&=', '|=',
+        'COMPARISON': ('<', '>', '<=', '>=', '==', '!=', '<>'),
+        'UNARY': ('-', '~'),
+        'AUGMENTEDASSIGNMENT': ('+=', '-=', '*=', '/=', '%=', '&=', '|=',
                                 '^=', '<<=', '>>=', '**=', '//='),
-        'BITWISE' : ('<<', '>>', '&', '|', '^', '~'),
-        'COMPLEX' : ('j', 'J')
+        'BITWISE': ('<<', '>>', '&', '|', '^', '~'),
+        'COMPLEX': ('j', 'J')
     }
     symbols = {
         '%': 'OPERATORS FORMATTING',
@@ -1804,7 +1802,7 @@ class Helper:
         self._input = input
         self._output = output
 
-    input  = property(lambda self: self._input or sys.stdin)
+    input = property(lambda self: self._input or sys.stdin)
     output = property(lambda self: self._output or sys.stdout)
 
     def __repr__(self):
@@ -1967,7 +1965,7 @@ module "pydoc_data.topics" could not be found.
             return('''
 Sorry, topic and keyword documentation is not available because the
 module "pydoc_data.topics" could not be found.
-''' , '')
+''', '')
         target = self.topics.get(topic, self.keywords.get(topic))
         if not target:
             raise ValueError('could not find topic')
@@ -2068,7 +2066,7 @@ class ModuleScanner:
                             onerror(modname)
                         continue
                     desc = (module.__doc__ or '').splitlines()[0]
-                    path = getattr(module,'__file__',None)
+                    path = getattr(module, '__file__', None)
                 name = modname + ' - ' + desc
                 if name.lower().find(key) >= 0:
                     callback(path, modname, desc)
@@ -2401,7 +2399,7 @@ def _url_handler(url, content_type="text/html"):
             '<big><big><strong>%s</strong></big></big>' % title,
             '#ffffff', '#7799ee')
         contents = '<pre>%s</pre>' % html.markup(contents)
-        contents = html.bigsection(topic , '#ffffff','#ee77aa', contents)
+        contents = html.bigsection(topic, '#ffffff', '#ee77aa', contents)
         if xrefs:
             xrefs = sorted(xrefs.split())
 
