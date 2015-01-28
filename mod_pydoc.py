@@ -623,7 +623,7 @@ class HTMLDoc(Doc):
             elif type(entry) is type([]):
                 result = result + '<dd>\n%s</dd>\n' % self.formattree(
                     entry, modname, c)
-        return '<dl><dt>&nbsp;</dt>\n%s<dd>&nbsp;</dd></dl>\n' % result
+        return '<dl><dt></dt>\n%s<dd></dd></dl>\n' % result
 
     def docmodule(self, object, name=None, mod=None, *ignored):
         """Produce HTML documentation for a module object."""
@@ -814,7 +814,7 @@ class HTMLDoc(Doc):
                     else:
                         doc = None
                     if doc is None:
-                        push('<dl><dt>%s</dt><dd>&nbsp;</dd></dl>\n' % base)
+                        push('<dl><dt>%s</dt><dd></dd></dl>\n' % base)
                     else:
                         doc = self.markup(getdoc(value), self.preformat,
                                           funcs, classes, mdict)
@@ -951,12 +951,12 @@ class HTMLDoc(Doc):
         decl = title + argspec + (note and self.grey(note))
 
         if skipdocs:
-            return '<dl><dt>%s</dt><dd>&nbsp;</dd></dl>\n' % decl
+            return '<dl><dt>%s</dt><dd></dd></dl>\n' % decl
         else:
             doc = self.markup(
                 getdoc(object), self.preformat, funcs, classes, methods)
             doc = doc and '<dd><code>%s</code></dd>' % doc
-            return '<dl><dt>%s</dt><dd>&nbsp;</dd>%s</dl>\n' % (decl, doc)
+            return '<dl><dt>%s</dt><dd></dd>%s</dl>\n' % (decl, doc)
 
     def _docdescriptor(self, name, value, mod):
         results = []
@@ -967,7 +967,7 @@ class HTMLDoc(Doc):
         if value.__doc__ is not None:
             doc = self.markup(getdoc(value), self.preformat)
             push('<dd><code>%s</code></dd>\n' % doc)
-        push('<dd>&nbsp;</dd></dl>\n')
+        push('<dd></dd></dl>\n')
 
         return ''.join(results)
 
