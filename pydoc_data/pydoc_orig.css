@@ -1,0 +1,16 @@
+/* CSS file for pydoc - intended to reproduce the original hard-coded values. */
+
+body {background-color:#f0f0f8}
+
+div.main {
+    clear:both;
+    padding-top:.5em;
+}
+/* Naming convention: whenever possible, the class names reflect the name
+   of the methods where the hard-coded values were used. */
+
+.repr_string {color:#c040c0}
+
+
+
+

@@ -69,6 +69,7 @@ from collections import deque
 from reprlib import Repr
 from traceback import format_exception_only
 
+# flake8: noqa
 
 # --------------------------------------------------------- common routines
 
@@ -441,7 +442,8 @@ class HTMLRepr(Repr):
             # needed to make any special characters, so show a raw string.
             return 'r' + testrepr[0] + self.escape(test) + testrepr[0]
         return re.sub(r'((\\[\\abfnrtv\'"]|\\[0-9]..|\\x..|\\u....)+)',
-                      r'<font color="#c040c0">\1</font>',
+                    # r'<font color="#c040c0">\1</font>',
+                      r'<span class="repr_string">\1</span>',
                       self.escape(testrepr))
 
     repr_str = repr_string
@@ -466,10 +468,10 @@ class HTMLDoc(Doc):
     def page(self, title, contents):
         """Format an HTML page."""
         return '''\
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!doctype html>
 <html><head><title>Python: %s</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-</head><body bgcolor="#f0f0f8">
+<meta charset="UTF-8">
+</head><body>
 %s
 </body></html>''' % (title, contents)
 
@@ -2162,7 +2164,7 @@ def _start_server(urlhandler, port):
             else:
                 content_type = 'text/html'
             self.send_response(200)
-            self.send_header('Content-Type', '%s; charset=UTF-8' % content_type)
+            self.send_header('Content-Type', content_type)
             self.end_headers()
             self.wfile.write(self.urlhandler(
                 self.path, content_type).encode('utf-8'))
@@ -2238,8 +2240,8 @@ def _start_server(urlhandler, port):
 def _url_handler(url, content_type="text/html"):
     """The pydoc url handler for use with the pydoc server.
 
-    If the content_type is 'text/css', the _pydoc.css style
-    sheet is read and returned if it exits.
+    If the content_type is 'text/css', the css style
+    sheet is read and returned if it exists.
 
     If the content_type is 'text/html', then the result of
     get_html_page(url) is returned.
@@ -2248,16 +2250,13 @@ def _url_handler(url, content_type="text/html"):
 
         def page(self, title, contents):
             """Format an HTML page."""
-            css_path = "pydoc_data/_pydoc.css"
-            css_link = (
-                '<link rel="stylesheet" type="text/css" href="%s">' %
-                css_path)
-            return '''\
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html><head><title>Pydoc: %s</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-%s</head><body bgcolor="#f0f0f8">%s<div style="clear:both;padding-top:.5em;">%s</div>
-</body></html>''' % (title, css_link, html_navbar(), contents)
+            css_path = "pydoc_data/pydoc_orig.css"
+            return '''<!doctype html>
+<html><head><title>Pydoc: {}</title><meta charset="utf-8">
+<link href="{}" rel="stylesheet">
+</head><body>{}
+<div class="main">{}</div>
+</body></html>'''.format(title, css_path, html_navbar(), contents)
 
         def filelink(self, url, path):
             return '<a href="getfile?key=%s">%s</a>' % (url, path)
@@ -2477,7 +2476,7 @@ def _url_handler(url, content_type="text/html"):
 
     if url.startswith('/'):
         url = url[1:]
-    if content_type == 'text/css':
+    if url.endswith('.css'):
         path_here = os.path.dirname(os.path.realpath(__file__))
         css_path = os.path.join(path_here, url)
         with open(css_path) as fp:
