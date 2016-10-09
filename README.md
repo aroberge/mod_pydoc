@@ -5,10 +5,18 @@ Pydoc is great - no, make that **fantastic**.
 However, I (and apparently other people) do not like the choice of colors
 for the pages served in a  browser by pydoc.
 
+This fork has a custom css file which you can use to make pydoc look better.
+To see it (u8y7541's css):
+
+    python mod_pydoc.py -b -c custom.css
+
+![screenshot](Screenshot01.png)
+![screenshot](Screenshot02.png)
+
 The original pydoc module has hard-coded values for color choices.
 This new version, based on html5, uses css styling.
 
-To test:
+To test (aroberge's css):
 
     python mod_pydoc.py -b
 
