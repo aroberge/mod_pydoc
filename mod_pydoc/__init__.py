@@ -2229,8 +2229,8 @@ def _start_server(urlhandler, port):
     return thread
 
 
-CSS_PATH = "pydoc_data/pydoc.css"
-
+CSS_PATH = os.path.join(os.path.dirname(__file__),"pydoc_data", "pydoc.css")
+print("CSS PATH:",CSS_PATH)
 def _url_handler(url, content_type="text/html"):
     """The pydoc url handler for use with the pydoc server.
 
